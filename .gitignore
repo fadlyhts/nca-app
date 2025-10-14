@@ -156,7 +156,6 @@ plots/
 results/
 models_deployment/*.h5
 models_deployment/*.json
-model/
 *.csv
 *.xlsx
 *.xls
