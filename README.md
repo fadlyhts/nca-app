@@ -1,57 +1,72 @@
-# EDA & Prediction API with FastAPI
+# 📊 EDA & LSTM Prediction Dashboard
 
-Automated Exploratory Data Analysis and XGBoost Prediction Pipeline using FastAPI.
+Automated Exploratory Data Analysis and 5-Year Forecasting using Multi-Output LSTM Model for Natural Capital Accounting (NCA) intensity predictions.
 
-## Features
+## 🌟 Features
 
-- **Automatic EDA Generation**: Upload a dataset and automatically generate comprehensive exploratory data analysis including:
-  - Dataset overview and statistics
-  - Missing values analysis
-  - Correlation heatmap
-  - Distribution plots
-  - Box plots for outlier detection
-  - Categorical variable analysis
+### 1. **Automatic EDA Generation**
+Upload a dataset to automatically generate comprehensive exploratory data analysis:
+- Dataset overview and statistics
+- Missing values analysis  
+- Correlation heatmap
+- Distribution plots for numerical features
+- Box plots for outlier detection
+- Categorical variable analysis
 
-- **XGBoost Predictions with Auto Feature Engineering**: Use pre-trained XGBoost model to make predictions
-  - **Automatic Feature Engineering**: Automatically creates lag features, rolling means, and intensity features from raw data
-  - **35 Engineered Features**: Generates all required features from just 6 base columns
-  - Automatic preprocessing with scaler
-  - Model performance metrics (R2: 0.747, RMSE: 0.541, MAE: 0.227)
-  - Download predictions as CSV
+### 2. **LSTM Time Series Forecasting**
+Predict **intensity_nca** (NCA/GDP ratio) for the **next 5 years**:
+- **Model Type**: Multi-Output LSTM (TensorFlow/Keras)
+- **Lookback Period**: 5 consecutive years
+- **Forecast Horizon**: 5 future years
+- **Input Method**: Manual data entry form
+- **Features**: 7 economic indicators
+- **Visualization**: Interactive charts showing historical + forecast
+- **Download**: CSV results with predictions
 
-### Required Columns for Predictions
+## 📋 Required Data for Forecasting
 
-**⚠️ Time Series Model:** This model uses **sequences of 10 consecutive timesteps** to make predictions.
-- Need **at least 10 rows** of data to generate 1 prediction
-- From N rows, you'll get **N-9 predictions** (due to sequence windowing)
-- Each prediction uses information from the previous 10 time periods
+### Input Requirements
+Enter data for **5 consecutive years** with these 7 features:
 
-Your dataset needs these **6 base columns** (the app will auto-engineer the rest):
-- `nca` - Natural Capital Accounting value
-- `gdp` - Gross Domestic Product
-- `growth_gdp` - GDP growth rate
-- `growth_nca` - NCA growth rate  
-- `loggrowth_gdp` - Log of GDP growth
-- `loggrowth_nca` - Log of NCA growth
+| Feature | Description |
+|---------|-------------|
+| `nca` | Natural Capital Accounting value |
+| `gdp` | Gross Domestic Product |
+| `growth_gdp` | GDP growth rate |
+| `growth_nca` | NCA growth rate |
+| `loggrowth_gdp` | Log of GDP growth |
+| `loggrowth_nca` | Log of NCA growth |
+| `intensity_nca` | NCA/GDP ratio (auto-calculated if not provided) |
 
-**Optional columns** (recommended for time-series data):
-- `year` - For temporal sorting
-- `code` or `countryname` - For grouping by entity
+### Optional Information
+- `year` - For temporal context
+- `code` - Country/entity code (e.g., USA, IDN, CHN)
+- `countryname` - Full country/entity name
 
-The application will automatically:
-1. Engineer 35 features (lag features, rolling means, intensity ratios)
-2. Scale features using pre-fitted scaler
-3. Create sequences of 10 timesteps
-4. Generate predictions using XGBoost model
+## 🚀 Installation
 
-## Installation
+### 1. Create Virtual Environment
+```bash
+python -m venv .venv
+```
 
-1. Install dependencies:
+### 2. Activate Virtual Environment
+**Windows:**
+```bash
+.venv\Scripts\activate
+```
+
+**Linux/Mac:**
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-## Running the Application
+## 💻 Running the Application
 
 ### Option 1: Streamlit Interface (Recommended)
 
@@ -63,12 +78,12 @@ streamlit run app_streamlit.py
 
 The application will be available at `http://localhost:8501`
 
-This provides an easy-to-use web interface with:
-- Drag-and-drop file upload
-- Automatic EDA generation with visualizations
-- One-click predictions with downloadable results
-- Beautiful, responsive UI
-- Python 3.13 compatible
+**Features:**
+- 📝 Manual data entry form for 5 years
+- 📊 Automatic EDA generation with visualizations  
+- 🔮 5-year forecast with interactive charts
+- 📥 Downloadable CSV results
+- 🎨 Beautiful, responsive UI
 
 ### Option 2: FastAPI Backend
 
@@ -88,159 +103,199 @@ The API will be available at `http://127.0.0.1:8005`
 
 Interactive API documentation (Swagger UI): `http://127.0.0.1:8005/docs`
 
-## API Endpoints
+## 📖 Usage Guide
+
+### Using Streamlit Interface (Easiest)
+
+1. **Run the app:**
+   ```bash
+   streamlit run app_streamlit.py
+   ```
+
+2. **Navigate to EDA Tab:**
+   - Upload CSV/Excel file
+   - View automatic analysis and visualizations
+
+3. **Navigate to Predictions Tab:**
+   - Enter country information (optional)
+   - Fill in economic data for 5 consecutive years:
+     - Year, NCA, GDP, Growth rates, Log growth rates
+   - Click "🔮 Generate 5-Year Forecast"
+   - View predictions and visualization
+   - Download results as CSV
+
+### Example Input Data
+
+| Year | NCA | GDP | Growth GDP | Growth NCA | Log Growth GDP | Log Growth NCA |
+|------|-----|-----|------------|------------|----------------|----------------|
+| 2020 | 100 | 20000 | 0.03 | 0.02 | 0.029 | 0.019 |
+| 2021 | 105 | 21000 | 0.05 | 0.05 | 0.048 | 0.048 |
+| 2022 | 110 | 22000 | 0.048 | 0.048 | 0.046 | 0.046 |
+| 2023 | 115 | 23000 | 0.045 | 0.045 | 0.044 | 0.044 |
+| 2024 | 120 | 24000 | 0.043 | 0.043 | 0.042 | 0.042 |
+
+**Output:** Predictions for years 2025-2029
+
+## 🔌 API Endpoints
 
 ### 1. Upload & Generate EDA
 **POST** `/upload-eda`
 
 Upload a CSV or Excel file to automatically generate exploratory data analysis.
 
-**Request:**
-- File: CSV or Excel (.csv, .xlsx, .xls)
-
-**Response:**
-- Session ID
-- Dataset information (rows, columns, dtypes)
-- Summary statistics
-- Missing values analysis
-- List of numerical and categorical columns
-- Paths to generated plots
-
-**Example (using curl):**
-```bash
-curl -X POST "http://127.0.0.1:8005/upload-eda" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@your_dataset.csv"
-```
-
-### 2. Make Predictions
+### 2. Make LSTM Predictions  
 **POST** `/predict`
 
-Upload a dataset to generate predictions using the pre-trained XGBoost model.
+Generate 5-year forecasts using the LSTM model.
 
 **Request:**
-- File: CSV or Excel (.csv, .xlsx, .xls)
+- File: CSV or Excel with 5+ rows of historical data
 
 **Response:**
-- Session ID
-- Number of predictions
-- Array of predictions
-- Model information and metrics
-- Download URL for results
-
-**Example (using curl):**
-```bash
-curl -X POST "http://127.0.0.1:8005/predict" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@your_dataset.csv"
+```json
+{
+  "session_id": "uuid",
+  "n_sequences": 1,
+  "predictions_shape": [1, 5],
+  "lookback": 5,
+  "horizon": 5,
+  "target": "intensity_nca",
+  "predictions_summary": {
+    "min": 0.005,
+    "max": 0.006,
+    "mean": 0.0055
+  },
+  "download_url": "/download/uuid_predictions.csv"
+}
 ```
 
 ### 3. Get Model Information
 **GET** `/model-info`
 
-Retrieve information about the loaded XGBoost model.
+Retrieve LSTM model information.
 
-**Response:**
-- Model name
-- Performance metrics (R2, RMSE, MAE, MSE)
-- Number of features
-- Deployment date
+### 4. Get Model Features
+**GET** `/model-features`
 
-### 4. Get Plot Image
-**GET** `/plots/{filename}`
+Get list of required features for predictions.
 
-Retrieve generated plot images.
-
-### 5. Download Prediction Results
+### 5. Download Results
 **GET** `/download/{filename}`
 
-Download prediction results as CSV file.
+Download prediction results as CSV.
 
-### 6. Health Check
+### 6. Get Plots
+**GET** `/plots/{filename}`
+
+Retrieve generated EDA visualization images.
+
+### 7. Health Check
 **GET** `/health`
 
-Check API health and model loading status.
+Check API health status.
 
-## Usage Example
-
-### Using Streamlit Interface (Easiest)
-
-1. Run `streamlit run app_streamlit.py`
-2. Browser will automatically open to `http://localhost:8501`
-3. Upload your CSV/Excel file
-4. View automatic EDA generation or make predictions
-5. Download prediction results
-
-### Using Python with FastAPI Backend
+## 🐍 Python API Example
 
 ```python
 import requests
+import pandas as pd
 
-# Upload dataset and get EDA
+# 1. Upload dataset for EDA
 with open('dataset.csv', 'rb') as f:
     response = requests.post('http://127.0.0.1:8005/upload-eda', 
                            files={'file': f})
     eda_result = response.json()
-    print(f"Session ID: {eda_result['session_id']}")
-    print(f"Dataset shape: {eda_result['dataset_info']['n_rows']} rows, "
-          f"{eda_result['dataset_info']['n_columns']} columns")
-    
-    # Download plots
-    for plot_name, plot_path in eda_result['plots'].items():
-        plot_filename = plot_path.split('/')[-1]
-        plot_response = requests.get(f'http://127.0.0.1:8005/plots/{plot_filename}')
-        with open(f'downloaded_{plot_name}.png', 'wb') as img:
-            img.write(plot_response.content)
+    print(f"Dataset: {eda_result['dataset_info']['n_rows']} rows")
 
-# Make predictions
-with open('dataset.csv', 'rb') as f:
+# 2. Make 5-year forecast
+with open('historical_data.csv', 'rb') as f:
     response = requests.post('http://127.0.0.1:8005/predict',
                            files={'file': f})
-    prediction_result = response.json()
-    print(f"Predictions: {prediction_result['predictions'][:5]}...")  # First 5
+    result = response.json()
+    print(f"Generated {result['n_sequences']} forecast sequences")
+    print(f"Predictions for next {result['horizon']} years")
     
     # Download results
-    download_url = prediction_result['download_url']
-    results = requests.get(f'http://127.0.0.1:8005{download_url}')
-    with open('predictions.csv', 'wb') as f:
-        f.write(results.content)
+    csv_response = requests.get(f"http://127.0.0.1:8005{result['download_url']}")
+    with open('forecasts.csv', 'wb') as f:
+        f.write(csv_response.content)
+
+# 3. Get model information
+response = requests.get('http://127.0.0.1:8005/model-info')
+model_info = response.json()
+print(f"Model: {model_info['model_name']}")
+print(f"Lookback: {model_info['lookback']} years")
+print(f"Horizon: {model_info['horizon']} years")
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```plaintext
-eda-fastapi/
-├── app_streamlit.py          # Streamlit web interface (main app)
-├── main.py                   # FastAPI application
-├── eda_module.py             # EDA generation logic
-├── prediction.py             # Model prediction logic
-├── models.py                 # Pydantic schemas
-├── requirements.txt          # Dependencies
-├── uploads/                  # Uploaded files (temporary)
-├── plots/                    # Generated visualizations
-├── results/                  # Prediction results
-├── static/                   # HTML/CSS/JS frontend (optional)
-└── models_deployment/        # Pre-trained models
-    ├── xgboost_model.pkl
-    ├── scaler.pkl
-    └── model_performance.json
+nca-app/
+├── .venv/                    # Virtual environment
+├── model/                    # LSTM model files
+│   ├── multi_output_lstm_h5_lookback5.keras  # Keras model
+│   ├── scaler_multi.pkl      # StandardScaler for features
+│   └── app.py                # Flask app reference
+├── plots/                    # Generated EDA visualizations
+├── results/                  # Prediction outputs (CSV)
+├── uploads/                  # Temporary file uploads
+├── static/                   # Static files (if any)
+├── app_streamlit.py          # ✅ Main Streamlit web interface
+├── main.py                   # ✅ FastAPI backend server
+├── eda_module.py             # ✅ EDA generation module
+├── prediction_lstm.py        # ✅ LSTM prediction module
+├── models.py                 # ✅ Pydantic data models
+├── requirements.txt          # ✅ Python dependencies
+├── Dockerfile                # Docker configuration
+├── DEPLOYMENT.md             # Deployment guide
+└── README.md                 # ✅ This file
 ```
 
-## Model Information
+## 🤖 Model Information
 
-- **Model Type**: XGBoost Regressor
-- **Features**: 35 numerical features
-- **Performance Metrics**:
-  - R² Score: 0.7475
-  - RMSE: 0.541
-  - MAE: 0.227
-  - MSE: 0.293
+### Multi-Output LSTM Model
+- **Architecture**: LSTM (Long Short-Term Memory)
+- **Framework**: TensorFlow/Keras
+- **Input Shape**: (batch_size, 5 timesteps, 7 features)
+- **Output Shape**: (batch_size, 5 predictions)
+- **Lookback Period**: 5 years
+- **Forecast Horizon**: 5 years  
+- **Target Variable**: intensity_nca (NCA/GDP ratio)
+- **Preprocessing**: StandardScaler fitted on training data
 
-## Notes
+### Model Files
+- **Model**: `model/multi_output_lstm_h5_lookback5.keras` (444 KB)
+- **Scaler**: `model/scaler_multi.pkl` (790 bytes)
 
-- Supported file formats: CSV, Excel (.xlsx, .xls)
-- Plots are automatically generated for numerical and categorical features
-- Uploaded files are stored temporarily and can be cleaned periodically
-- The model expects numerical features and will automatically scale them using the pre-trained scaler
+## 📦 Dependencies
+
+Key libraries:
+- **FastAPI** - Web API framework
+- **Streamlit** - Interactive web interface
+- **TensorFlow** - LSTM model inference
+- **Pandas** - Data manipulation
+- **Matplotlib/Seaborn** - Visualizations
+- **Scikit-learn** - Data scaling
+
+## 📝 Notes
+
+- **Supported Formats**: CSV, Excel (.xlsx, .xls) for EDA
+- **Manual Entry**: For predictions, use the Streamlit form
+- **Minimum Data**: 5 consecutive years required
+- **Automatic Scaling**: Features are scaled using pre-fitted StandardScaler
+- **Intensity Calculation**: If not provided, intensity_nca = nca / gdp
+- **Output**: Predictions are returned as intensity_nca values
+
+## 🐳 Docker Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for Docker deployment instructions.
+
+## 📄 License
+
+This project is for educational purposes as part of Data Analysis coursework.
+
+## 👥 Contributors
+
+- Developed for Natural Capital Accounting analysis
+- Semester 7 - Data Analyst Course
