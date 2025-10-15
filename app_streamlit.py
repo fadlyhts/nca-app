@@ -275,29 +275,48 @@ with tab2:
             
             # Visualization
             if len(predictions) > 0:
-                st.subheader("📈 Visualisasi Prediksi")
+                st.subheader("📈 Visualisasi Peramalan")
                 import matplotlib.pyplot as plt
                 
-                fig, ax = plt.subplots(figsize=(10, 5))
+                fig, ax = plt.subplots(figsize=(12, 6))
                 
                 # Historical data
                 historical_years = [row['year'] for row in data_rows]
                 historical_intensity = [row['nca'] / row['gdp'] for row in data_rows]
                 
-                # Forecast data
+                # Forecast data (dimulai dari tahun terakhir historis untuk menghubungkan garis)
+                last_year = data_rows[-1]['year']
+                last_intensity = historical_intensity[-1]
+                
                 forecast_years = [data_rows[-1]['year'] + i for i in range(1, 6)]
-                forecast_values = predictions[0]
+                forecast_values = predictions[0].tolist()
                 
-                ax.plot(historical_years, historical_intensity, 'o-', label='Historis', linewidth=2, markersize=8)
-                ax.plot(forecast_years, forecast_values, 's--', label='Prediksi', linewidth=2, markersize=8, color='red')
-                ax.axvline(x=data_rows[-1]['year'], color='gray', linestyle=':', alpha=0.7, label='Mulai Prediksi')
+                # Gabungkan data untuk garis yang terhubung
+                # Garis historis
+                ax.plot(historical_years, historical_intensity, 'o-', label='Data Historis', 
+                       linewidth=2.5, markersize=8, color='#2E86AB', zorder=3)
                 
-                ax.set_xlabel('Tahun', fontsize=12)
-                ax.set_ylabel('Intensitas NCA', fontsize=12)
-                ax.set_title(f'{country_name} - Prediksi Intensitas NCA', fontsize=14, fontweight='bold')
-                ax.legend()
-                ax.grid(True, alpha=0.3)
+                # Garis prediksi yang terhubung dari titik terakhir historis
+                connected_years = [last_year] + forecast_years
+                connected_values = [last_intensity] + forecast_values
+                ax.plot(connected_years, connected_values, 's-', label='Peramalan', 
+                       linewidth=2.5, markersize=8, color='#E63946', linestyle='--', zorder=3)
                 
+                # Garis vertikal pembatas
+                ax.axvline(x=last_year, color='gray', linestyle=':', linewidth=1.5, 
+                          alpha=0.7, label='Batas Prediksi', zorder=2)
+                
+                # Tambahkan area shading untuk prediksi
+                ax.axvspan(last_year, forecast_years[-1], alpha=0.1, color='red', zorder=1)
+                
+                ax.set_xlabel('Tahun', fontsize=13, fontweight='bold')
+                ax.set_ylabel('Intensitas NCA (NCA/GDP)', fontsize=13, fontweight='bold')
+                ax.set_title(f'{country_name} - Peramalan Intensitas NCA 5 Tahun', 
+                           fontsize=15, fontweight='bold', pad=20)
+                ax.legend(loc='best', fontsize=11, framealpha=0.9)
+                ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.5)
+                
+                plt.tight_layout()
                 st.pyplot(fig)
             
             with open(output_path, 'rb') as f:
