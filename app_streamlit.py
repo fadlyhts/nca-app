@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="EDA & Prediction Dashboard",
+    page_title="Dashboard EDA & Prediksi",
     page_icon="📊",
     layout="wide"
 )
@@ -17,7 +17,7 @@ try:
     from eda_module import EDAGenerator
     from prediction_lstm import LSTMPredictor
 except Exception as e:
-    st.error(f"Error importing modules: {e}")
+    st.error(f"Kesalahan saat mengimpor modul: {e}")
     st.stop()
 
 @st.cache_resource
@@ -25,19 +25,19 @@ def load_predictor():
     try:
         return LSTMPredictor()
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"Kesalahan saat memuat model: {e}")
         return None
 
 predictor = load_predictor()
 
 if predictor is None:
-    st.error("Failed to load predictor. Please check model files.")
+    st.error("Gagal memuat model prediksi. Silakan periksa file model.")
     st.stop()
 
-st.title("📊 EDA & LSTM Prediction Dashboard")
-st.markdown("Upload your dataset for automatic exploratory data analysis and 5-year forecasting using LSTM model")
+st.title("📊 Dashboard Analisis Data Eksploratif & Prediksi LSTM")
+st.markdown("Unggah dataset Anda untuk analisis data eksploratif (EDA) otomatis dan prediksi 5 tahun menggunakan model LSTM")
 
-tab1, tab2, tab3 = st.tabs(["📈 Exploratory Data Analysis", "🎯 Make Predictions", "ℹ️ About"])
+tab1, tab2, tab3 = st.tabs(["📈 Analisis Data Eksploratif", "🎯 Buat Prediksi", "ℹ️ Tentang"])
 
 with tab1:
     st.header("Upload Dataset for EDA")
@@ -119,83 +119,83 @@ with tab1:
             st.error(f"Error processing file: {str(e)}")
 
 with tab2:
-    st.header("Input Data for 5-Year Forecasting")
+    st.header("Input Data untuk Prediksi 5 Tahun")
     
-    with st.expander("ℹ️ About LSTM Model", expanded=False):
+    with st.expander("ℹ️ Tentang Model LSTM", expanded=False):
         st.info("""
-        **Multi-Output LSTM Model for Time Series Forecasting**
+        **Model LSTM Multi-Output untuk Prediksi Time Series**
         
-        This model predicts **intensity_nca** for the **next 5 years** based on the **previous 5 years** of data.
+        Model ini memprediksi **intensity_nca** untuk **5 tahun ke depan** berdasarkan data **5 tahun sebelumnya**.
         
-        **Required Columns (7 features):**
-        - `nca` - Natural Capital Accounting value
-        - `gdp` - Gross Domestic Product  
-        - `growth_gdp` - GDP growth rate
-        - `growth_nca` - NCA growth rate
-        - `loggrowth_gdp` - Log of GDP growth
-        - `loggrowth_nca` - Log of NCA growth
-        - `intensity_nca` - NCA/GDP ratio (auto-calculated if missing)
+        **Kolom yang Diperlukan (7 fitur):**
+        - `nca` - Nilai Natural Capital Accounting
+        - `gdp` - Gross Domestic Product (PDB)
+        - `growth_gdp` - Tingkat pertumbuhan GDP
+        - `growth_nca` - Tingkat pertumbuhan NCA
+        - `loggrowth_gdp` - Log pertumbuhan GDP
+        - `loggrowth_nca` - Log pertumbuhan NCA
+        - `intensity_nca` - Rasio NCA/GDP (dihitung otomatis jika tidak ada)
         
-        **Optional Columns:**
-        - `year` - For temporal context
-        - `code` or `countryname` - For entity identification
+        **Kolom Opsional:**
+        - `year` - Untuk konteks temporal
+        - `code` atau `countryname` - Untuk identifikasi entitas
         
-        **How it works:**
-        - **Lookback**: Uses 5 consecutive years as input
-        - **Horizon**: Predicts next 5 years  
-        - **Sequences**: From N rows, generates N-4 prediction sequences
-        - **Example**: 20 rows → 16 sequences, each predicting 5 future years
+        **Cara Kerja:**
+        - **Lookback**: Menggunakan 5 tahun berturut-turut sebagai input
+        - **Horizon**: Memprediksi 5 tahun ke depan
+        - **Sequences**: Dari N baris, menghasilkan N-4 urutan prediksi
+        - **Contoh**: 20 baris → 16 urutan, masing-masing memprediksi 5 tahun ke depan
         
-        **Minimum data requirement**: At least 5 rows needed
+        **Persyaratan minimum**: Setidaknya 5 baris data diperlukan
         """)
         
-        if st.button("Show Model Details"):
+        if st.button("Tampilkan Detail Model"):
             model_info = predictor.get_model_info()
             st.json(model_info)
     
-    st.markdown("### 📝 Enter Data for the Last 5 Years")
-    st.markdown("Fill in the economic indicators for 5 consecutive years to predict the next 5 years.")
+    st.markdown("### 📝 Masukkan Data untuk 5 Tahun Terakhir")
+    st.markdown("Isi indikator ekonomi untuk 5 tahun berturut-turut untuk memprediksi 5 tahun ke depan.")
     
     # Input form
     with st.form("prediction_form"):
-        st.markdown("#### Country/Entity Information (Optional)")
+        st.markdown("#### Informasi Negara/Entitas (Opsional)")
         col_info1, col_info2 = st.columns(2)
         with col_info1:
-            country_code = st.text_input("Country Code", value="USA", help="e.g., USA, IDN, CHN")
+            country_code = st.text_input("Kode Negara", value="USA", help="contoh: USA, IDN, CHN")
         with col_info2:
-            country_name = st.text_input("Country Name", value="United States", help="Full country name")
+            country_name = st.text_input("Nama Negara", value="United States", help="Nama negara lengkap")
         
-        st.markdown("#### Enter Data for 5 Years")
+        st.markdown("#### Masukkan Data untuk 5 Tahun")
         
         data_rows = []
         current_year = 2024
         
         for i in range(5):
             year = current_year - 4 + i
-            st.markdown(f"**Year {year}**")
+            st.markdown(f"**Tahun {year}**")
             
             cols = st.columns(7)
             
             with cols[0]:
-                year_val = st.number_input(f"Year", value=year, key=f"year_{i}", disabled=True)
+                year_val = st.number_input(f"Tahun", value=year, key=f"year_{i}", disabled=True)
             with cols[1]:
                 nca = st.number_input(f"NCA", value=100.0, format="%.2f", key=f"nca_{i}", 
                                      help="Natural Capital Accounting")
             with cols[2]:
                 gdp = st.number_input(f"GDP", value=20000.0, format="%.2f", key=f"gdp_{i}",
-                                     help="Gross Domestic Product")
+                                     help="Produk Domestik Bruto")
             with cols[3]:
-                growth_gdp = st.number_input(f"GDP Growth", value=0.03, format="%.4f", key=f"growth_gdp_{i}",
-                                            help="GDP Growth Rate")
+                growth_gdp = st.number_input(f"Pertumbuhan GDP", value=0.03, format="%.4f", key=f"growth_gdp_{i}",
+                                            help="Tingkat Pertumbuhan GDP")
             with cols[4]:
-                growth_nca = st.number_input(f"NCA Growth", value=0.02, format="%.4f", key=f"growth_nca_{i}",
-                                            help="NCA Growth Rate")
+                growth_nca = st.number_input(f"Pertumbuhan NCA", value=0.02, format="%.4f", key=f"growth_nca_{i}",
+                                            help="Tingkat Pertumbuhan NCA")
             with cols[5]:
-                loggrowth_gdp = st.number_input(f"Log GDP Growth", value=0.029, format="%.4f", key=f"loggrowth_gdp_{i}",
-                                               help="Log of GDP Growth")
+                loggrowth_gdp = st.number_input(f"Log Pertumbuhan GDP", value=0.029, format="%.4f", key=f"loggrowth_gdp_{i}",
+                                               help="Log dari Pertumbuhan GDP")
             with cols[6]:
-                loggrowth_nca = st.number_input(f"Log NCA Growth", value=0.019, format="%.4f", key=f"loggrowth_nca_{i}",
-                                               help="Log of NCA Growth")
+                loggrowth_nca = st.number_input(f"Log Pertumbuhan NCA", value=0.019, format="%.4f", key=f"loggrowth_nca_{i}",
+                                               help="Log dari Pertumbuhan NCA")
             
             data_rows.append({
                 'year': year_val,
@@ -209,15 +209,15 @@ with tab2:
                 'loggrowth_nca': loggrowth_nca
             })
         
-        submitted = st.form_submit_button("🔮 Generate 5-Year Forecast", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("🔮 Buat Prediksi 5 Tahun", type="primary", use_container_width=True)
     
     if submitted:
         try:
             df = pd.DataFrame(data_rows)
             
-            st.info(f"📋 Data prepared: {len(df)} years of historical data")
+            st.info(f"📋 Data disiapkan: {len(df)} tahun data historis")
             
-            with st.spinner('Generating 5-year forecasts...'):
+            with st.spinner('Membuat Prediksi 5 tahun...'):
                 predictions, start_years, model_info = predictor.predict(df)
                 
                 predictions_df = predictor.format_predictions_as_dataframe(
@@ -228,54 +228,54 @@ with tab2:
                 output_path = f"results/{session_id}_predictions.csv"
                 predictor.save_predictions(predictions_df, str(output_path))
             
-            st.success("✅ 5-Year Forecast Generated Successfully!")
+            st.success("✅ Prediksi 5 Tahun Berhasil Dibuat!")
             
             st.info(f"""
-            📊 Generated **{len(predictions)} forecast sequence(s)**
-            - Forecasting **{model_info['horizon']} years** into the future
-            - Based on **{model_info['lookback']} years** of historical data
-            - Target variable: **{model_info['target']}**
+            📊 Berhasil membuat **{len(predictions)} urutan Prediksi**
+            - Meramalkan **{model_info['horizon']} tahun** ke depan
+            - Berdasarkan **{model_info['lookback']} tahun** data historis
+            - Variabel target: **{model_info['target']}**
             """)
             
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("🤖 Model Information")
+                st.subheader("🤖 Informasi Model")
                 st.write(f"**Model:** {model_info['model_name']}")
-                st.write(f"**Type:** {model_info['model_type']}")
-                st.write(f"**Lookback:** {model_info['lookback']} years")
-                st.write(f"**Horizon:** {model_info['horizon']} years")
+                st.write(f"**Tipe:** {model_info['model_type']}")
+                st.write(f"**Lookback:** {model_info['lookback']} tahun")
+                st.write(f"**Horizon:** {model_info['horizon']} tahun")
                 st.write(f"**Target:** {model_info['target']}")
                 
-                st.subheader("📈 Forecast Years")
+                st.subheader("📈 Tahun Prediksi")
                 if len(predictions) > 0:
                     base_year = data_rows[-1]['year']
                     forecast_years = [base_year + i for i in range(1, 6)]
-                    st.write(f"**Base Year:** {base_year}")
-                    st.write(f"**Forecast Years:** {', '.join(map(str, forecast_years))}")
+                    st.write(f"**Tahun Dasar:** {base_year}")
+                    st.write(f"**Tahun Prediksi:** {', '.join(map(str, forecast_years))}")
             
             with col2:
-                st.subheader("🎯 Forecast Results")
+                st.subheader("🎯 Hasil Prediksi")
                 
                 if len(predictions) > 0:
                     forecast_values = predictions[0]
                     
-                    st.write(f"**{model_info['target'].upper()} Predictions:**")
+                    st.write(f"**Prediksi {model_info['target'].upper()}:**")
                     for i, val in enumerate(forecast_values, 1):
                         year = data_rows[-1]['year'] + i
-                        st.metric(f"Year {year}", f"{val:.6f}", delta=None)
+                        st.metric(f"Tahun {year}", f"{val:.6f}", delta=None)
                     
                     st.write("")
                     st.write(f"**Min:** {predictions.min():.6f}")
-                    st.write(f"**Max:** {predictions.max():.6f}")
-                    st.write(f"**Mean:** {predictions.mean():.6f}")
+                    st.write(f"**Maks:** {predictions.max():.6f}")
+                    st.write(f"**Rata-rata:** {predictions.mean():.6f}")
             
-            st.subheader("📋 Detailed Forecast Table")
+            st.subheader("📋 Tabel Prediksi Detail")
             st.dataframe(predictions_df, use_container_width=True)
             
             # Visualization
             if len(predictions) > 0:
-                st.subheader("📈 Forecast Visualization")
+                st.subheader("📈 Visualisasi Prediksi")
                 import matplotlib.pyplot as plt
                 
                 fig, ax = plt.subplots(figsize=(10, 5))
@@ -288,13 +288,13 @@ with tab2:
                 forecast_years = [data_rows[-1]['year'] + i for i in range(1, 6)]
                 forecast_values = predictions[0]
                 
-                ax.plot(historical_years, historical_intensity, 'o-', label='Historical', linewidth=2, markersize=8)
-                ax.plot(forecast_years, forecast_values, 's--', label='Forecast', linewidth=2, markersize=8, color='red')
-                ax.axvline(x=data_rows[-1]['year'], color='gray', linestyle=':', alpha=0.7, label='Forecast Start')
+                ax.plot(historical_years, historical_intensity, 'o-', label='Historis', linewidth=2, markersize=8)
+                ax.plot(forecast_years, forecast_values, 's--', label='Prediksi', linewidth=2, markersize=8, color='red')
+                ax.axvline(x=data_rows[-1]['year'], color='gray', linestyle=':', alpha=0.7, label='Mulai Prediksi')
                 
-                ax.set_xlabel('Year', fontsize=12)
-                ax.set_ylabel('Intensity NCA', fontsize=12)
-                ax.set_title(f'{country_name} - NCA Intensity Forecast', fontsize=14, fontweight='bold')
+                ax.set_xlabel('Tahun', fontsize=12)
+                ax.set_ylabel('Intensitas NCA', fontsize=12)
+                ax.set_title(f'{country_name} - Prediksi Intensitas NCA', fontsize=14, fontweight='bold')
                 ax.legend()
                 ax.grid(True, alpha=0.3)
                 
@@ -302,7 +302,7 @@ with tab2:
             
             with open(output_path, 'rb') as f:
                 st.download_button(
-                    label="📥 Download Forecast Results (CSV)",
+                    label="📥 Unduh Hasil Prediksi (CSV)",
                     data=f,
                     file_name=f"forecast_{country_code}_{session_id}.csv",
                     mime="text/csv",
@@ -310,49 +310,49 @@ with tab2:
                 )
                     
         except Exception as e:
-            st.error(f"Error during prediction: {str(e)}")
+            st.error(f"Kesalahan saat membuat prediksi: {str(e)}")
 
 with tab3:
-    st.header("About This Application")
+    st.header("Tentang Aplikasi Ini")
     
     st.markdown("""
-    This application provides two main functionalities:
+    Aplikasi ini menyediakan dua fungsi utama:
     
-    ### 1. Exploratory Data Analysis (EDA)
-    Automatically generates comprehensive analysis including:
-    - Dataset overview and statistics
-    - Missing values analysis
-    - Correlation heatmap
-    - Distribution plots for numerical features
-    - Box plots for outlier detection
-    - Categorical variable analysis
+    ### 1. Analisis Data Eksploratif (EDA)
+    Secara otomatis menghasilkan analisis komprehensif meliputi:
+    - Ringkasan dataset dan statistik
+    - Analisis nilai yang hilang
+    - Heatmap korelasi
+    - Plot distribusi untuk fitur numerik
+    - Box plot untuk deteksi outlier
+    - Analisis variabel kategorikal
     
-    ### 2. LSTM Time Series Forecasting
-    Uses a pre-trained Multi-Output LSTM model for 5-year forecasting:
-    - **Model Type:** LSTM (Long Short-Term Memory)
-    - **Lookback:** 5 years of historical data
-    - **Horizon:** Predicts next 5 years
-    - **Target:** intensity_nca (NCA/GDP ratio)
-    - **Features:** 7 economic indicators
-    - **Input Method:** Manual data entry form
+    ### 2. Prediksi Time Series LSTM
+    Menggunakan model LSTM Multi-Output yang telah dilatih untuk Prediksi 5 tahun:
+    - **Tipe Model:** LSTM (Long Short-Term Memory)
+    - **Lookback:** 5 tahun data historis
+    - **Horizon:** Memprediksi 5 tahun ke depan
+    - **Target:** intensity_nca (rasio NCA/GDP)
+    - **Fitur:** 7 indikator ekonomi
+    - **Metode Input:** Form entri data manual
     
-    ### Model Architecture
-    - **Input Shape:** (5 timesteps, 7 features)
-    - **Output Shape:** 5 future predictions
-    - **Model File:** multi_output_lstm_h5_lookback5.keras
+    ### Arsitektur Model
+    - **Bentuk Input:** (5 timesteps, 7 fitur)
+    - **Bentuk Output:** 5 prediksi masa depan
+    - **File Model:** multi_output_lstm_h5_lookback5.keras
     
-    ### Required Features
+    ### Fitur yang Diperlukan
     1. NCA (Natural Capital Accounting)
-    2. GDP (Gross Domestic Product)
-    3. GDP Growth Rate
-    4. NCA Growth Rate
-    5. Log GDP Growth
-    6. Log NCA Growth
-    7. Intensity NCA (auto-calculated if not provided)
+    2. GDP (Produk Domestik Bruto)
+    3. Tingkat Pertumbuhan GDP
+    4. Tingkat Pertumbuhan NCA
+    5. Log Pertumbuhan GDP
+    6. Log Pertumbuhan NCA
+    7. Intensitas NCA (dihitung otomatis jika tidak disediakan)
     
-    ### How to Use
-    1. Enter country/entity information
-    2. Fill in economic data for 5 consecutive years
-    3. Click "Generate 5-Year Forecast"
-    4. View predictions and download results
+    ### Cara Menggunakan
+    1. Masukkan informasi negara/entitas
+    2. Isi data ekonomi untuk 5 tahun berturut-turut
+    3. Klik "Buat Prediksi 5 Tahun"
+    4. Lihat prediksi dan unduh hasilnya
     """)
