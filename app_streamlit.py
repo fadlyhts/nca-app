@@ -119,7 +119,7 @@ with tab1:
             st.error(f"Error processing file: {str(e)}")
 
 with tab2:
-    st.header("Upload Dataset for 5-Year Forecasting")
+    st.header("Input Data for 5-Year Forecasting")
     
     with st.expander("ℹ️ About LSTM Model", expanded=False):
         st.info("""
