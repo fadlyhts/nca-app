@@ -148,6 +148,18 @@ class LSTMPredictor:
             predictions = self.model.predict(X, verbose=0)
             
             print(f"Predictions shape: {predictions.shape}")
+            print(f"Predictions (scaled): min={predictions.min():.4f}, max={predictions.max():.4f}")
+            
+            # Inverse transform predictions back to original scale
+            # The target 'intensity_nca' is at index 6 (last feature) in the scaler
+            target_idx = self.required_features.index(self.target_column)
+            target_mean = self.scaler.mean_[target_idx]
+            target_scale = self.scaler.scale_[target_idx]
+            
+            # Apply inverse transformation: original = (scaled * scale) + mean
+            predictions = predictions * target_scale + target_mean
+            
+            print(f"Predictions (original scale): min={predictions.min():.4f}, max={predictions.max():.4f}")
             
             # Get start years if available
             start_years = []
