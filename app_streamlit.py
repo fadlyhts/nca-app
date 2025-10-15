@@ -275,7 +275,7 @@ with tab2:
             
             # Visualization
             if len(predictions) > 0:
-                st.subheader("📈 Visualisasi Peramalan")
+                st.subheader("📈 Visualisasi Prediksi")
                 import matplotlib.pyplot as plt
                 
                 fig, ax = plt.subplots(figsize=(12, 6))
@@ -299,7 +299,7 @@ with tab2:
                 # Garis prediksi yang terhubung dari titik terakhir historis
                 connected_years = [last_year] + forecast_years
                 connected_values = [last_intensity] + forecast_values
-                ax.plot(connected_years, connected_values, 's-', label='Peramalan', 
+                ax.plot(connected_years, connected_values, 's-', label='Prediksi', 
                        linewidth=2.5, markersize=8, color='#E63946', linestyle='--', zorder=3)
                 
                 # Garis vertikal pembatas
@@ -311,7 +311,7 @@ with tab2:
                 
                 ax.set_xlabel('Tahun', fontsize=13, fontweight='bold')
                 ax.set_ylabel('Intensitas NCA (NCA/GDP)', fontsize=13, fontweight='bold')
-                ax.set_title(f'{country_name} - Peramalan Intensitas NCA 5 Tahun', 
+                ax.set_title(f'{country_name} - Prediksi Intensitas NCA 5 Tahun', 
                            fontsize=15, fontweight='bold', pad=20)
                 ax.legend(loc='best', fontsize=11, framealpha=0.9)
                 ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.5)
