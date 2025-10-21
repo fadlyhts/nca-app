@@ -179,23 +179,23 @@ with tab2:
             with cols[0]:
                 year_val = st.number_input(f"Tahun", value=year, key=f"year_{i}", disabled=True)
             with cols[1]:
-                nca = st.number_input(f"NCA", value=100.0, format="%.2f", key=f"nca_{i}", 
-                                     help="Natural Capital Accounting")
+                nca = st.number_input(f"NCA", value=None, format="%.2f", key=f"nca_{i}", 
+                                     help="Natural Capital Accounting", placeholder="Masukkan nilai NCA")
             with cols[2]:
-                gdp = st.number_input(f"GDP", value=20000.0, format="%.2f", key=f"gdp_{i}",
-                                     help="Produk Domestik Bruto")
+                gdp = st.number_input(f"GDP", value=None, format="%.2f", key=f"gdp_{i}",
+                                     help="Produk Domestik Bruto", placeholder="Masukkan nilai GDP")
             with cols[3]:
-                growth_gdp = st.number_input(f"Pertumbuhan GDP", value=0.03, format="%.4f", key=f"growth_gdp_{i}",
-                                            help="Tingkat Pertumbuhan GDP")
+                growth_gdp = st.number_input(f"Pertumbuhan GDP", value=None, format="%.4f", key=f"growth_gdp_{i}",
+                                            help="Tingkat Pertumbuhan GDP", placeholder="Masukkan pertumbuhan GDP")
             with cols[4]:
-                growth_nca = st.number_input(f"Pertumbuhan NCA", value=0.02, format="%.4f", key=f"growth_nca_{i}",
-                                            help="Tingkat Pertumbuhan NCA")
+                growth_nca = st.number_input(f"Pertumbuhan NCA", value=None, format="%.4f", key=f"growth_nca_{i}",
+                                            help="Tingkat Pertumbuhan NCA", placeholder="Masukkan pertumbuhan NCA")
             with cols[5]:
-                loggrowth_gdp = st.number_input(f"Log Pertumbuhan GDP", value=0.029, format="%.4f", key=f"loggrowth_gdp_{i}",
-                                               help="Log dari Pertumbuhan GDP")
+                loggrowth_gdp = st.number_input(f"Log Pertumbuhan GDP", value=None, format="%.4f", key=f"loggrowth_gdp_{i}",
+                                               help="Log dari Pertumbuhan GDP", placeholder="Masukkan log pertumbuhan GDP")
             with cols[6]:
-                loggrowth_nca = st.number_input(f"Log Pertumbuhan NCA", value=0.019, format="%.4f", key=f"loggrowth_nca_{i}",
-                                               help="Log dari Pertumbuhan NCA")
+                loggrowth_nca = st.number_input(f"Log Pertumbuhan NCA", value=None, format="%.4f", key=f"loggrowth_nca_{i}",
+                                               help="Log dari Pertumbuhan NCA", placeholder="Masukkan log pertumbuhan NCA")
             
             data_rows.append({
                 'year': year_val,
